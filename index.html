@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 5px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+            width: 450px;
+        }
+
+        .container {
+            width: 500px;
+            clear: both;
+        }
+
+        .container input {
+            width: 50%;
+            clear: both;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form>
+            <div>
+                <label class="label-name" for="name">Name:</label>
+                <input type="text" id="nametxt" placeholder="Enter your name" required />
+            </div>
+            <div>
+                <label class="label-name" for="age">Age:</label>
+                <input type="Number" id="age" placeholder="Enter your Age" required />
+            </div>
+            <div>
+                <label for="Gender" class="label-name">Gender:</label>
+                <select id="genders">
+                    <option value="0">please select gender</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                    <option value="3">Other</option>
+                </select>
+            </div>
+            <div class="button">
+                <button type="button" onclick="savedata()">Save</button>
+            </div>
+        </form>
+        <hr>
+    </div>
+    <div>
+        <table id="form_result">
+            <tr id="rowId">
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Action</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        var row;
+        var data;
+
+        function savedata() {
+            let x = document.getElementById('nametxt').value;
+            if (x == "") {
+                alert("Name must be filled out");
+                return false;
+            }
+            let y = document.getElementById('age').value;
+            if (y == "") {
+                alert("age must be filled out");
+                return false;
+            }
+            let z = document.getElementById('genders').value;
+            if (z == "0") {
+                alert("please select gender");
+                return false;
+            }
+            var genders = document.getElementById("genders");
+            data = {
+                "name": document.getElementById('nametxt').value,
+                "age": document.getElementById('age').value,
+                "gender": genders.options[genders.selectedIndex].text,
+            }
+            createtablerow()
+            localdata();
+        
+
+        }
+        function createtablerow() {
+
+            table = document.getElementById('form_result');
+            var columnCount = table.rows[0].cells.length;
+
+            //Add the data rows.
+            row = table.insertRow(-1);
+
+            var cell1 = row.insertCell(-1);
+            var cell2 = row.insertCell(-1);
+            var cell3 = row.insertCell(-1);
+            var cell4 = row.insertCell(-1);
+
+            cell1.innerHTML = data.name;
+            cell2.innerHTML = data.age;
+            cell3.innerHTML = data.gender;
+            cell4.innerHTML ="<button onclick='deleteRow()'>Delete</button>"
+
+            //here i am adding the row
+            table.appendChild(row);
+
+
+        }
+        //local storage
+        function localdata() {
+            var name = document.getElementById('nametxt').value;
+            var age = document.getElementById('age').value;
+            var gender = genders.options[genders.selectedIndex].text;
+
+            //   localStorage.setItem("name",name)
+            //   localStorage.setItem("age",age)
+            //   localStorage.setItem("gender",gender)
+
+            var userRecords = new Array();
+            userRecords = JSON.parse(localStorage.getItem("users")) ? JSON.parse(localStorage.getItem("users")) : [];
+
+            userRecords.push({
+                "name": name,
+                "age": age,
+                "gender": gender
+            });
+
+            localStorage.setItem("users", JSON.stringify(userRecords))
+        }
+        //onloadfunction
+       window.onload=function() {
+            var userdata=JSON.parse(localStorage.getItem("users"))
+            for (var i= 0;i<userdata.length;i++) {
+                table = document.getElementById('form_result');
+                var columnCount = table.rows[i].cells.length;
+                //Add the data rows.
+                row = table.insertRow(-1);
+
+                var cell1 = row.insertCell(-1);
+                var cell2 = row.insertCell(-1);
+                var cell3 = row.insertCell(-1);
+                var cell4 = row.insertCell(-1);
+
+                cell1.innerHTML = userdata[i].name;
+                cell2.innerHTML = userdata[i].age;
+                cell3.innerHTML = userdata[i].gender;
+                cell4.innerHTML = '<button id="del" onclick="deleteRow()">Delete</button>'
+
+                //here i am adding the row
+                table.appendChild(row);
+            }
+
+
+        }
+        // function reset(){
+        //      document.getElementById('nametxt').value="";
+        //      document.getElementById('age').value ="";
+        //      genders.options[genders.selectedIndex].text="";
+        //      selectedRow=null;
+        // }
+
+        // function deleteRow(){
+        //     if(confirm('are u sure')){
+        //         var userdata=JSON.parse(localStorage.getItem("users"))
+        //         // localStorage.setItem("users", JSON.stringify(userdata))
+        //         row=table.parentElement.parentElement;
+        //         document.getElementById("form_result").deleteRow(row.rowIndex);
+        //         localStorage.removeItem('users');
+
+        //         reset();
+        //     }
+        // }
+
+    //  function deleteRow(){
+         
+    //     var userdata=JSON.parse(localStorage.getItem("users"))
+    //     // console.log(userdata)
+    //     userdata.forEach((cur,index)=>{
+    //         userdata.splice(cur,1); 
+    //     })   
+    //     localStorage.setItem("users",JSON.stringify(userdata));
+        
+    //  }
+
+    //   function deleteRow(){
+    //     if(confirm('are u sure')){                   
+    //     var userdata=JSON.parse(localStorage.getItem("users"))
+    //         userdata.forEach((cur)=> {
+    //             return userdata
+    //      });
+    //     // localStorage.removeItem("users");
+
+    //   }
+    // }
+    function deleteRow(){
+    var index, table = document.getElementById('form_result');
+            for(var i = 1; i < table.rows.length; i++)
+            {
+                table.rows[i].cells[3].onclick = function()
+                {
+                    var c = confirm("do you want to delete this row");
+                    if(c === true)
+                    {
+                        index = this.parentElement.rowIndex;
+                        table.deleteRow(index);
+                        //for local data delete
+                    }
+                         
+                        console.log(index);
+                        var userdata=JSON.parse(localStorage.getItem("users"))
+                        console.log(userdata)
+                        userdata.splice(index-1,1);
+                        console.log('userdata=====',userdata)
+                        localStorage.setItem("users",JSON.stringify(userdata));
+                        console.log(data);    
+                };
+                  
+               }
+                       }
+    </script>
+</body>
+
+</html>
